@@ -1,0 +1,6 @@
+[submodule "fancy_gym"]
+	path = fancy_gym
+	url = git@github.com:ALRhub/fancy_gym.git
+[submodule "air_hockey_challenge"]
+	path = air_hockey_challenge
+	url = git@github.com:AirHockeyChallenge/air_hockey_challenge.git
