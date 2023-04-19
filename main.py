@@ -18,7 +18,7 @@ def main():
     test = True
     cpu_n = 3
     log_dir = "logs/"
-    name = "enes_reward_2_normalized"
+    name = "enes_reward_4.1"
     log_dir = os.path.join(log_dir, name)
     best_model_dir = os.path.join(log_dir, "best_model")
     vec_normalize_data_dir = os.path.join(log_dir, "vec_normalize_data")
@@ -54,7 +54,8 @@ def main():
                 eval_env.render()
                 time.sleep(0.01)
                 if dones:
-                    print(reward)
+                    print("until:{}".format(reward - _rewards))
+                    print("full:{}".format(reward))
                     break
     
     class SaveCustomLog(BaseCallback):
