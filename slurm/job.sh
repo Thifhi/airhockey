@@ -4,10 +4,10 @@
 
 # Cluster Settings
 #SBATCH -n 1
-#SBATCH -c 80
-#SBATCH -t 300
+#SBATCH -c 40
+#SBATCH -t 600
 
 source /home/kit/stud/upgmi/airhockey/.venv/bin/activate
 export PYTHONPATH="${PYTHONPATH}:/home/kit/stud/upgmi/airhockey"
 
-python /home/kit/stud/upgmi/airhockey/lunar.py
+python /home/kit/stud/upgmi/airhockey/main.py
