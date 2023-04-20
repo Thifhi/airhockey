@@ -1,22 +1,25 @@
 from stable_baselines3 import PPO
-from stable_baselines3.common.evaluation import evaluate_policy
-from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import SubprocVecEnv, DummyVecEnv, VecMonitor, VecNormalize, sync_envs_normalization
+from stable_baselines3.common.callbacks import EvalCallback, BaseCallback
+from stable_baselines3.common.utils import set_random_seed
+
 import os
 import time
 import fancy_gym
-import imageio
-import torch
-
-import numpy as np
-from stable_baselines3.common.results_plotter import load_results, ts2xy
-from stable_baselines3.common.callbacks import EvalCallback, CheckpointCallback, BaseCallback
 import json
+
+def make_env(env_id: str, rank: int, seed: int = 0):
+    def _init():
+        env = fancy_gym.make(env_id, seed=seed + rank)
+        return env
+
+    set_random_seed(seed)
+    return _init
 
 def main():
     load = True
     test = True
-    cpu_n = 3
+    num_cpu = 3
     log_dir = "logs/"
     name = "enes_reward_4.1"
     log_dir = os.path.join(log_dir, name)
@@ -25,8 +28,8 @@ def main():
     custom_log_dir = os.path.join(log_dir, "custom_log.json")
     os.makedirs(log_dir, exist_ok=True)
 
-    train_env = VecMonitor(SubprocVecEnv([lambda: fancy_gym.make("3dof-hit", seed=0) for _ in range(cpu_n)]))
-    eval_env = VecNormalize(VecMonitor(DummyVecEnv([lambda: fancy_gym.make("3dof-hit", seed=1)])), training=False, norm_reward=False)
+    train_env = VecMonitor(SubprocVecEnv([make_env("3dof-hit", i) for i in range(num_cpu)]))
+    eval_env = VecNormalize(VecMonitor(DummyVecEnv([lambda: fancy_gym.make("3dof-hit", seed=0)])), training=False, norm_reward=False)
 
     if load:
         print("Loaded")
@@ -54,8 +57,8 @@ def main():
                 eval_env.render()
                 time.sleep(0.01)
                 if dones:
-                    print("until:{}".format(reward - _rewards))
-                    print("full:{}".format(reward))
+                    # print("Reward until last:{}".format(reward - _rewards))
+                    print("Full reward:{}".format(reward))
                     break
     
     class SaveCustomLog(BaseCallback):
@@ -65,7 +68,7 @@ def main():
                 json.dump(custom_log, f)
             return True
         
-    eval_callback = EvalCallback(eval_env, n_eval_episodes=40, log_path=log_dir, eval_freq=10000, deterministic=True, render=False, callback_after_eval=SaveCustomLog())
+    eval_callback = EvalCallback(eval_env, n_eval_episodes=20, log_path=log_dir, eval_freq=10000, deterministic=True, render=False, callback_after_eval=SaveCustomLog())
 
     class SaveBestModel(BaseCallback):
         def _on_step(self) -> bool:
