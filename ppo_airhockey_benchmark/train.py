@@ -15,7 +15,7 @@ def start_training(name, env, reward_func, num_envs, hyperparameters={}, load=Fa
     base_path = pathlib.Path(__file__).parent.parent.resolve()
     model_dir = base_path / log_dir / name
     if load:
-        with open(model_dir / custom_log_file_name, "r") as f:
+        with open(model_dir / checkpoint_dir / (checkpoint + ".json"), "r") as f:
             custom_log = json.load(f)
         train_env, eval_env = make_environments(env, reward_func, num_envs, load=True, load_dir=model_dir / checkpoint_dir / (checkpoint + ".pkl"))
         model_load_dir = model_dir / checkpoint_dir / (checkpoint + ".zip")
@@ -29,6 +29,9 @@ def start_training(name, env, reward_func, num_envs, hyperparameters={}, load=Fa
         train_env, eval_env = make_environments(env, reward_func, num_envs)
         model = PPO("MlpPolicy", train_env, verbose=1, tensorboard_log=model_dir, **hyperparameters)
     sync_envs_normalization(train_env, eval_env)
-    callbacks = CallbackList([CheckpointLog(model_dir, custom_log, int(10000/num_envs)), CustomEvalCallback(eval_env, SaveBestModel(model_dir, custom_log), 10, int(1000/num_envs), custom_log["best_mean_reward"])])
+    checkpoint_callback = CheckpointLog(model_dir, custom_log, int(10000/num_envs))
+    save_best_model_callback = SaveBestModel(model_dir, custom_log)
+    custom_eval_callback = CustomEvalCallback(eval_env, save_best_model_callback, 10, int(10000/num_envs), custom_log["best_mean_reward"])
+    callbacks = CallbackList([checkpoint_callback, custom_eval_callback])
     model.learn(total_timesteps=2e8, progress_bar=True, reset_num_timesteps=False, tb_log_name="run", callback=callbacks)
 

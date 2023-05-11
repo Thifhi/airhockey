@@ -34,8 +34,12 @@ class CheckpointLog(BaseCallback):
         self.custom_log["num_timesteps"] = self.model.num_timesteps
         with open(self.save_dir / custom_log_file_name, "w") as f:
             json.dump(self.custom_log, f)
+        
         self.model.save(self.save_dir / checkpoint_dir / (str(self.model.num_timesteps) + ".zip"))
         self.training_env.save(self.save_dir / checkpoint_dir / (str(self.model.num_timesteps) + ".pkl"))
+        with open(self.save_dir / checkpoint_dir / (str(self.model.num_timesteps) + ".json"), "w") as f:
+            json.dump(self.custom_log, f)
+
         return True
 
 class CustomEvalCallback(EventCallback):
