@@ -35,4 +35,6 @@ def process_hyperparameters(hyperparameters, num_envs):
             res[k] = float(v)
         elif k == "batch_size":
             res[k] = int(v)
+        elif k == "gamma":
+            res[k] = float(v)
     return res
