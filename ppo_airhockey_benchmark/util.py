@@ -25,3 +25,14 @@ def make_environments(env, reward_func, num_envs, only_eval=False, load=False, l
     else:
         train_env = VecNormalize.load(load_dir, train_env)
     return train_env, eval_env
+
+def process_hyperparameters(hyperparameters, num_envs):
+    res = {}
+    for k,v in hyperparameters:
+        if k == "n_steps":
+            res[k] = int(int(v)/num_envs)
+        elif k == "learning_rate":
+            res[k] = float(v)
+        elif k == "batch_size":
+            res[k] = int(v)
+    return res

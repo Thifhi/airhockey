@@ -1,2 +1,5 @@
 .venv
 logs
+old_logs
+**/__pycache__
+slurm-*

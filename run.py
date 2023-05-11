@@ -4,9 +4,9 @@ import argparse
 from ppo_airhockey_benchmark.train import start_training
 from ppo_airhockey_benchmark.test import start_testing
 
-debug = True
+debug = False
 if debug:
-    print("DEBUG"*10)
+    print("DEBUG"*100)
 
 NAME="16k"
 ENV="3dof-hit-interpolate"
@@ -15,12 +15,7 @@ NUM_ENVS=12
 debug_args = f"--name {NAME} --env {ENV} --reward_func {REWARD_FUNC} --num_envs {NUM_ENVS} --test"
 
 def pair(arg):
-    split = arg.split(':')
-    if split[0] == "int":
-        return (split[1], int(split[2]))
-    elif split[0] == "float":
-        return (split[1], float(split[2]))
-
+    return arg.split(':')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -37,8 +32,7 @@ if __name__ == "__main__":
     else:
         args = parser.parse_args(debug_args.split())
 
-    hyperparameters = {x:y for x,y in args.hyperparameters}
     if args.test:
         start_testing(args.name, args.env, args.reward_func)
     else:
-        start_training(args.name, args.env, args.reward_func, args.num_envs, hyperparameters, args.load, args.checkpoint)
+        start_training(args.name, args.env, args.reward_func, args.num_envs, args.hyperparameters, args.load, args.checkpoint)

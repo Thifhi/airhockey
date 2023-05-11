@@ -90,7 +90,7 @@ class CustomEvalCallback(EventCallback):
         mean_min_dist_puck_goal = np.mean([i["min_dist_puck_goal"] for i in self.done_infos])
         self.logger.record("eval/min_dist_puck_goal", mean_min_dist_puck_goal)
 
-        mean_puck_velocity = np.mean([i["puck_velocity"] for i in self.done_infos])
+        mean_puck_velocity = np.mean([i["mean_puck_vel_after_hit"] for i in self.done_infos])
         self.logger.record("eval/puck_velocity", mean_puck_velocity)
 
         lower_joint_pos = [i["constraints_value"]["joint_pos_constr"][:3] for i in self.all_infos]
@@ -111,10 +111,10 @@ class CustomEvalCallback(EventCallback):
 
         lower_ee_x = [i["constraints_value"]["ee_constr"][1] for i in self.all_infos]
         upper_ee_x = [i["constraints_value"]["ee_constr"][2] for i in self.all_infos]
-        self.logger.record("contraint/ee_y", np.max(np.max(lower_ee_x + upper_ee_x), 0))
+        self.logger.record("constraint/ee_y", np.max(np.max(lower_ee_x + upper_ee_x), 0))
 
         compute_times = [i["compute_time_ms"] for i in self.all_infos]
-        self.logger.record("contraint/compute_time", np.max(compute_times))
+        self.logger.record("constraint/compute_time", np.max(compute_times))
 
         self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
         self.logger.dump(self.num_timesteps)
