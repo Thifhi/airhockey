@@ -7,7 +7,7 @@ from stable_baselines3.common.callbacks import CallbackList
 from stable_baselines3.common.vec_env import sync_envs_normalization
 
 from .callbacks import CustomEvalCallback, SaveBestModel, CheckpointLog
-from .constants import log_dir, custom_log_file_name, checkpoint_dir
+from .constants import log_dir, checkpoint_dir
 from .util import make_environments
 
 
@@ -19,7 +19,7 @@ def start_training(name, env, reward_func, num_envs, hyperparameters={}, load=Fa
             custom_log = json.load(f)
         train_env, eval_env = make_environments(env, reward_func, num_envs, load=True, load_dir=model_dir / checkpoint_dir / (checkpoint + ".pkl"))
         model_load_dir = model_dir / checkpoint_dir / (checkpoint + ".zip")
-        model = PPO.load(model_load_dir, train_env, verbose=1, tensorboard_log=model_dir, **hyperparameters)
+        model = PPO.load(model_load_dir, train_env)
     else:
         os.makedirs(model_dir)
         os.makedirs(model_dir / checkpoint_dir)

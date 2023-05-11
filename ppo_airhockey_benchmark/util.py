@@ -13,9 +13,12 @@ def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
     return _init
 
 def make_environments(env, reward_func, num_envs, only_eval=False, load=False, load_dir=None):
-    eval_env = VecNormalize(VecMonitor(DummyVecEnv([lambda: fancy_gym.make(env, seed=0)])), training=False, norm_reward=False)
     if only_eval:
+        eval_env = VecNormalize.load(load_dir, DummyVecEnv([lambda: fancy_gym.make(env, seed=0)]))
+        eval_env.norm_reward = False
+        eval_env.training = False
         return eval_env
+    eval_env = VecNormalize(VecMonitor(DummyVecEnv([lambda: fancy_gym.make(env, seed=0)])), training=False, norm_reward=False)
     train_env = VecMonitor(SubprocVecEnv([make_env(env_id=env, rank=i) for i in range(num_envs)]))
     if not load:
         train_env = VecNormalize(train_env)
