@@ -41,13 +41,16 @@ if __name__ == "__main__":
     if args.context == "local":
         start_training(train_dir, args.load)
     elif args.context == "slurm":
-        with open("slurm.sh", "r") as f:
+        with open("base_slurm.sh", "r") as f:
             script = f.read()
         script = script.replace("%%name%%", config["name"])
+        script = script.replace("%%train_dir%%", train_dir.resolve())
         for k,v in config["slurm"].items():
             script = script.replace(f"%%{k}%%", str(v))
-        with open("slurm.sh", "w") as f:
+        with open("modified_slurm.sh", "w") as f:
             f.write(script)
-        cmd = f"./slurm.sh --from_slurm --train_dir {train_dir.resolve()}"
-        cmd += f"--load {args.load}" if args.load else ""
+        st = os.stat("modified_slurm.sh")
+        os.chmod("modified_slurm.sh", st.st_mode | 0o111)
+        cmd = "./modified_slurm.sh --from_slurm"
+        cmd += f" --load {args.load}" if args.load else ""
         subprocess.call(cmd, shell=True)

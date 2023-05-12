@@ -4,3 +4,4 @@ logs
 old_logs
 **/__pycache__
 slurm-*
+modified_slurm.sh
