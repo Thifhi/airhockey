@@ -3,6 +3,7 @@ from stable_baselines3.common.utils import set_random_seed
 from stable_baselines3.common.vec_env import (DummyVecEnv, SubprocVecEnv,
                                               VecMonitor, VecNormalize)
 
+import wandb
 
 def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
     def _init():
@@ -12,7 +13,7 @@ def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
     set_random_seed(seed)
     return _init
 
-def make_environments(env, reward_func, num_envs, only_eval=False, load=False, load_dir=None):
+def make_environments(env, num_envs, only_eval=False, load=False, load_dir=None):
     if only_eval:
         eval_env = VecNormalize.load(load_dir, DummyVecEnv([lambda: fancy_gym.make(env, seed=0)]))
         eval_env.norm_reward = False
@@ -26,15 +27,6 @@ def make_environments(env, reward_func, num_envs, only_eval=False, load=False, l
         train_env = VecNormalize.load(load_dir, train_env)
     return train_env, eval_env
 
-def process_hyperparameters(hyperparameters, num_envs):
-    res = {}
-    for k,v in hyperparameters:
-        if k == "n_steps":
-            res[k] = int(int(v)/num_envs)
-        elif k == "learning_rate":
-            res[k] = float(v)
-        elif k == "batch_size":
-            res[k] = int(v)
-        elif k == "gamma":
-            res[k] = float(v)
-    return res
+def setup_wandb(train_dir, config):
+    wandb_cfg = config["wandb"]
+    wandb.init(dir=train_dir, **wandb_cfg, group=config["group"], name=config["name"], sync_tensorboard=True, config=config)

@@ -1,38 +1,52 @@
 import os
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
+
+import yaml
 import argparse
 from ppo_airhockey_benchmark.train import start_training
 from ppo_airhockey_benchmark.test import start_testing
-
-debug = False
-if debug:
-    print("DEBUG"*100)
-
-NAME="16k"
-ENV="3dof-hit-interpolate"
-REWARD_FUNC="custom_reward"
-NUM_ENVS=12
-debug_args = f"--name {NAME} --env {ENV} --reward_func {REWARD_FUNC} --num_envs {NUM_ENVS} --test"
-
-def pair(arg):
-    return arg.split(':')
+import pathlib
+import shutil
+import subprocess
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--name", required=True)
-    parser.add_argument("--env", required=True)
-    parser.add_argument("--reward_func", required=True)
-    parser.add_argument("--num_envs", type=int, required=True)
-    parser.add_argument("--hyperparameters", default=[], type=pair, nargs="*")
-    parser.add_argument("--load", action="store_true")
-    parser.add_argument("--checkpoint", default=None)
-    parser.add_argument("--test", action="store_true")
-    if not debug:
-        args = parser.parse_args()
-    else:
-        args = parser.parse_args(debug_args.split())
+    test = parser.add_mutually_exclusive_group()
+    test.add_argument("--test", action="store_true")
+    test.add_argument("--test_dir")
+    maybe_load = parser.add_mutually_exclusive_group()
+    maybe_load.add_argument("--load", default=None)
+    train = maybe_load.add_mutually_exclusive_group()
+    train.add_argument("context", choices=["local", "slurm", "_from_slurm"], nargs="?", default="local")
+    from_slurm = maybe_load.add_mutually_exclusive_group()
+    from_slurm.add_argument("--from_slurm", action="store_true")
+    from_slurm.add_argument("--train_dir")
+    args = parser.parse_args()
+
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
 
     if args.test:
-        start_testing(args.name, args.env, args.reward_func)
-    else:
-        start_training(args.name, args.env, args.reward_func, args.num_envs, args.hyperparameters, args.load, args.checkpoint)
+        start_testing(pathlib.Path(args.test_dir))
+    
+    if args.from_slurm:
+        start_training(pathlib.Path(args.train_dir), args.load)
+    
+    # We will train so set up the folders
+    log_dir = pathlib.Path("logs")
+    train_dir = log_dir / config["group"] / config["name"]
+    os.makedirs(train_dir)
+    shutil.copy("config.yaml", train_dir)
+
+    if args.context == "local":
+        start_training(train_dir, args.load)
+    elif args.context == "slurm":
+        with open("slurm.sh", "r+") as f:
+            script = f.read()
+            script.replace("%%name%%", config["name"])
+            for k,v in config["slurm"]:
+                script.replace(f"%%{k}%%", v)
+            f.write(script)
+        cmd = f"slurm.sh --from_slurm --train_dir {train_dir.resolve()}"
+        cmd += f"--load {args.load}" if args.load else ""
+        subprocess.call(cmd)
