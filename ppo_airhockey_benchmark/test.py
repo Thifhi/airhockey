@@ -11,11 +11,9 @@ from .constants import log_dir, best_model_file_name, checkpoint_dir, vecnormali
 from .util import make_environments
 
 
-def start_testing(name, env, reward_func):
-    base_path = pathlib.Path(__file__).parent.parent.resolve()
-    model_dir = base_path / log_dir / name
-    eval_env = make_environments(env, reward_func, 0, only_eval=True, load=True, load_dir=model_dir / vecnormalize_file_name)
-    model_load_dir = model_dir / best_model_file_name
+def start_testing(env, path):
+    eval_env = make_environments(env, 0, only_eval=True, load=True, load_dir=path / vecnormalize_file_name)
+    model_load_dir = path / best_model_file_name
     model = PPO.load(model_load_dir)
     for q in range(50):
         obs = eval_env.reset()

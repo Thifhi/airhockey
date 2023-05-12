@@ -9,7 +9,10 @@ import pathlib
 import shutil
 import subprocess
 
-
+debug = False
+if debug:
+    input("THIS IS DEBUG. PRESS ENTER TO CONTINUE")
+    start_testing("3dof-hit-interpolate", pathlib.Path("logs/16k"))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
