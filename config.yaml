@@ -6,14 +6,15 @@ training:
   num_envs: 12
 
 hyperparameters:
-  n_steps: 64000
+  comment: "!!!n_steps is per parallel environment!!!"
+  n_steps: 1000
   batch_size: 256
   learning_rate: 3.e-4
 
 wandb:
   entity: "thifhi"
   project: "test"
-  mode: "disabled"
+  mode: "online"
 
 
 slurm:
