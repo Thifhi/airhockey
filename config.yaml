@@ -1,21 +1,20 @@
-group: "test"
-name: "default"
+group: "FILL"
+name: "FILL"
 
 training:
   env: "3dof-hit-interpolate"
-  num_envs: 12
+  num_envs: 60
 
+comment: "!!!n_steps is per parallel environment!!!"
 hyperparameters:
-  comment: "!!!n_steps is per parallel environment!!!"
   n_steps: 1000
   batch_size: 256
   learning_rate: 3.e-4
 
 wandb:
   entity: "thifhi"
-  project: "test"
-  mode: "online"
-
+  project: "FILL"
+  mode: "disabled"
 
 slurm:
   home: "/home/kit/stud/upgmi"
