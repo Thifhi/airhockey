@@ -80,13 +80,14 @@ class CustomEvalCallback(EventCallback):
 
         # Remap
         for i in self.all_infos:
-            i["reward_sparse"] = i["reward"]
+            i["reward_sparse"] = mean_reward
+            i["episode_length"] = mean_ep_length
             i["max_puck_velocity_after_hit"] = i["max_puck_vel_after_hit"]
-            i["mean_puck_velocity_after_hit"] = i["mean_puck_velocity_after_hit"]
+            i["mean_puck_velocity_after_hit"] = i["mean_puck_vel_after_hit"]
             i["mean_compute_time"] = i["mean_compute_time_ms"]
             i["max_compute_time"] = i["max_compute_time_ms"]
 
-        evals_in_info = ["reward_sparse", "episode_length", "has_hit", "has_hit_step", "has_scored", "has_scored_step", "min_dist_ee_puck", "mind_dist_puck_goal", "max_puck_velocity_after_hit", "mean_puck_velocity_after_hit"]
+        evals_in_info = ["reward_sparse", "episode_length", "has_hit", "has_hit_step", "has_scored", "has_scored_step", "min_dist_ee_puck", "min_dist_puck_goal", "max_puck_velocity_after_hit", "mean_puck_velocity_after_hit", ]
 
         for eval in evals_in_info:
             val = np.mean([i[eval] for i in self.all_infos])
