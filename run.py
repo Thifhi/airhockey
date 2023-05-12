@@ -17,7 +17,7 @@ if __name__ == "__main__":
     maybe_load = parser.add_mutually_exclusive_group()
     maybe_load.add_argument("--load", default=None)
     train = maybe_load.add_mutually_exclusive_group()
-    train.add_argument("context", choices=["local", "slurm", "_from_slurm"], nargs="?", default="local")
+    train.add_argument("context", choices=["local", "slurm"], nargs="?", default="local")
     from_slurm = maybe_load.add_mutually_exclusive_group()
     from_slurm.add_argument("--from_slurm", action="store_true")
     from_slurm.add_argument("--train_dir")
@@ -41,12 +41,13 @@ if __name__ == "__main__":
     if args.context == "local":
         start_training(train_dir, args.load)
     elif args.context == "slurm":
-        with open("slurm.sh", "r+") as f:
+        with open("slurm.sh", "r") as f:
             script = f.read()
-            script.replace("%%name%%", config["name"])
-            for k,v in config["slurm"]:
-                script.replace(f"%%{k}%%", v)
+        script = script.replace("%%name%%", config["name"])
+        for k,v in config["slurm"].items():
+            script = script.replace(f"%%{k}%%", str(v))
+        with open("slurm.sh", "w") as f:
             f.write(script)
-        cmd = f"slurm.sh --from_slurm --train_dir {train_dir.resolve()}"
+        cmd = f"./slurm.sh --from_slurm --train_dir {train_dir.resolve()}"
         cmd += f"--load {args.load}" if args.load else ""
-        subprocess.call(cmd)
+        subprocess.call(cmd, shell=True)
