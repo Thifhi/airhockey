@@ -3,7 +3,7 @@ sbatch <<EOT
 #!/bin/bash
 
 #SBATCH -J %%name%%
-#SBATCH -e %%train_dir%%/slurm-%j.out
+#SBATCH -o %%train_dir%%/slurm-%j.out
 #SBATCH -e %%train_dir%%/slurm-%j.err
 
 # Cluster Settings
@@ -15,6 +15,6 @@ sbatch <<EOT
 source %%home%%/airhockey/.venv/bin/activate
 export PYTHONPATH="${PYTHONPATH}:%%home%%/airhockey"
 
-python %%home%%/airhockey/run.py --from_slurm $@
+python %%home%%/airhockey/run.py --from_slurm --train_dir %%train_dir%% $@
 
 EOT

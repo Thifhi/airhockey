@@ -11,14 +11,14 @@ import subprocess
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    test = parser.add_mutually_exclusive_group()
+    test = parser.add_argument_group()
     test.add_argument("--test", action="store_true")
     test.add_argument("--test_dir")
-    maybe_load = parser.add_mutually_exclusive_group()
+    maybe_load = parser.add_argument_group()
     maybe_load.add_argument("--load", default=None)
-    train = maybe_load.add_mutually_exclusive_group()
+    train = maybe_load.add_argument_group()
     train.add_argument("context", choices=["local", "slurm"], nargs="?", default="local")
-    from_slurm = maybe_load.add_mutually_exclusive_group()
+    from_slurm = maybe_load.add_argument_group()
     from_slurm.add_argument("--from_slurm", action="store_true")
     from_slurm.add_argument("--train_dir")
     args = parser.parse_args()
@@ -44,7 +44,7 @@ if __name__ == "__main__":
         with open("base_slurm.sh", "r") as f:
             script = f.read()
         script = script.replace("%%name%%", config["name"])
-        script = script.replace("%%train_dir%%", train_dir.resolve())
+        script = script.replace("%%train_dir%%", str(train_dir.resolve()))
         for k,v in config["slurm"].items():
             script = script.replace(f"%%{k}%%", str(v))
         with open("modified_slurm.sh", "w") as f:
