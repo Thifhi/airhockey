@@ -75,49 +75,28 @@ class CustomEvalCallback(EventCallback):
         print(f"Eval num_timesteps={self.num_timesteps}, " f"episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode length: {mean_ep_length:.2f} +/- {std_ep_length:.2f}")
 
-        self.logger.record("eval/reward", float(mean_reward))
-        self.logger.record("eval/episode_length", mean_ep_length)
-
-        mean_success = np.mean([i["has_scored"] for i in self.done_infos])
-        self.logger.record("eval/success", mean_success)
-
-        mean_hit_rate = np.mean([i["has_hit"] for i in self.done_infos])
-        self.logger.record("eval/hit_rate", mean_hit_rate)
-
-        mean_min_dist_ee_puck = np.mean([i["min_dist_ee_puck"] for i in self.done_infos])
-        self.logger.record("eval/min_dist_ee_puck", mean_min_dist_ee_puck)
-
-        mean_min_dist_puck_goal = np.mean([i["min_dist_puck_goal"] for i in self.done_infos])
-        self.logger.record("eval/min_dist_puck_goal", mean_min_dist_puck_goal)
-
-        mean_puck_velocity = np.mean([i["mean_puck_vel_after_hit"] for i in self.done_infos])
-        self.logger.record("eval/puck_velocity", mean_puck_velocity)
-
-        lower_joint_pos = [i["constraints_value"]["joint_pos_constr"][:3] for i in self.all_infos]
-        upper_joint_pos = [i["constraints_value"]["joint_pos_constr"][3:] for i in self.all_infos]
-        max_joint_pos_constr = np.max(lower_joint_pos + upper_joint_pos, axis=1)
-        self.logger.record("constraint/joint_pos", np.max(np.max(max_joint_pos_constr), 0))
-
-        lower_joint_vel = [i["constraints_value"]["joint_vel_constr"][:3] for i in self.all_infos]
-        upper_joint_vel = [i["constraints_value"]["joint_vel_constr"][3:] for i in self.all_infos]
-        max_joint_vel_constr = np.max(lower_joint_vel + upper_joint_vel, axis=1)
-        self.logger.record("constraint/joint_vel", np.max(np.max(max_joint_vel_constr), 0))
-
-        max_joint_jerk_constr = np.max([i["jerk"] for i in self.all_infos], axis=1)
-        self.logger.record("constraint/joint_jerk", np.max(np.max(max_joint_jerk_constr), 0))
-
-        ee_constr_x = [i["constraints_value"]["ee_constr"][0] for i in self.all_infos]
-        self.logger.record("constraint/ee_x", np.max(np.max(ee_constr_x), 0))
-
-        lower_ee_x = [i["constraints_value"]["ee_constr"][1] for i in self.all_infos]
-        upper_ee_x = [i["constraints_value"]["ee_constr"][2] for i in self.all_infos]
-        self.logger.record("constraint/ee_y", np.max(np.max(lower_ee_x + upper_ee_x), 0))
-
-        compute_times = [i["compute_time_ms"] for i in self.all_infos]
-        self.logger.record("constraint/compute_time", np.max(compute_times))
-
         self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
         self.logger.dump(self.num_timesteps)
+
+        # Remap
+        for i in self.all_infos:
+            i["reward_sparse"] = i["reward"]
+            i["max_puck_velocity_after_hit"] = i["max_puck_vel_after_hit"]
+            i["mean_puck_velocity_after_hit"] = i["mean_puck_velocity_after_hit"]
+            i["mean_compute_time"] = i["mean_compute_time_ms"]
+            i["max_compute_time"] = i["max_compute_time_ms"]
+
+        evals_in_info = ["reward_sparse", "episode_length", "has_hit", "has_hit_step", "has_scored", "has_scored_step", "min_dist_ee_puck", "mind_dist_puck_goal", "max_puck_velocity_after_hit", "mean_puck_velocity_after_hit"]
+
+        for eval in evals_in_info:
+            val = np.mean([i[eval] for i in self.all_infos])
+            self.logger.record(f"eval/{eval}", val)
+
+        constraints_in_info = ["max_j_pos_violation", "max_j_vel_violation", "max_ee_x_violation", "max_ee_y_violation", "max_ee_z_violation", "max_jerk_violation", "num_j_pos_violation", "num_j_vel_violation", "num_ee_x_violation", "num_ee_y_violation", "num_ee_z_violation", "num_jerk_violation", "max_compute_time", "mean_compute_time"]
+
+        for constraint in constraints_in_info:
+            val = np.mean([i[constraint] for i in self.all_infos])
+            self.logger.record(f"constraint/{constraint}", val)
 
         if mean_reward > self.best_mean_reward:
             print("New best mean reward!")
