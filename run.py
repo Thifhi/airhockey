@@ -19,6 +19,7 @@ if __name__ == "__main__":
     test = parser.add_argument_group()
     test.add_argument("--test", action="store_true")
     test.add_argument("--test_dir")
+    test.add_argument("--env")
     maybe_load = parser.add_argument_group()
     maybe_load.add_argument("--load", default=None)
     train = maybe_load.add_argument_group()
@@ -32,7 +33,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(f)
 
     if args.test:
-        start_testing(pathlib.Path(args.test_dir))
+        start_testing(args.env, pathlib.Path(args.test_dir))
     
     if args.from_slurm:
         start_training(pathlib.Path(args.train_dir), args.load)
