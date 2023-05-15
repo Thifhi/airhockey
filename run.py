@@ -10,7 +10,7 @@ import shutil
 import subprocess
 
 def debug():
-    debug = True
+    debug = False
     train = True
     if debug:
         input("THIS IS DEBUG. PRESS ENTER TO CONTINUE")
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(f)
 
     log_dir = pathlib.Path("logs")
-    train_dir = log_dir / config["group"] / config["name"]
+    train_dir = log_dir / config["group"] / config["job_type"] / config["name"]
     os.makedirs(train_dir)
     shutil.copy("config.yaml", train_dir)
 

@@ -29,4 +29,4 @@ def make_environments(env, num_envs, env_args, only_eval=False, load=False, load
 
 def setup_wandb(train_dir, config):
     wandb_cfg = config["wandb"]
-    wandb.init(dir=train_dir, **wandb_cfg, group=config["group"], name=config["name"], sync_tensorboard=True, config=config)
+    wandb.init(dir=train_dir, **wandb_cfg, group=config["group"], job_type=config["job_type"], name=config["name"], sync_tensorboard=True, config=config)
