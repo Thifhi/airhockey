@@ -1,18 +1,20 @@
-import json
 import pathlib
-import os
 
+import yaml
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import CallbackList
-from stable_baselines3.common.vec_env import sync_envs_normalization
 
-from .callbacks import CustomEvalCallback, SaveBestModel, CheckpointLog
-from .constants import log_dir, best_model_file_name, checkpoint_dir, vecnormalize_file_name
+from .constants import best_model_file_name, vecnormalize_file_name
 from .util import make_environments
 
 
-def start_testing(env, path):
-    eval_env = make_environments(env, 0, only_eval=True, load=True, load_dir=path / vecnormalize_file_name)
+def start_testing():
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+
+    env = config["local_testing"]["env"]
+    env_args = config["local_testing"]["env_args"]
+    path = pathlib.Path(config["local_testing"]["path"])
+    eval_env = make_environments(env, 0, env_args, only_eval=True, load=True, load_dir=path / vecnormalize_file_name)
     model_load_dir = path / best_model_file_name
     model = PPO.load(model_load_dir)
     for q in range(50):

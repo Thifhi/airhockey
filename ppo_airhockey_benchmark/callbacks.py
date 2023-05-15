@@ -79,7 +79,7 @@ class CustomEvalCallback(EventCallback):
         self.logger.dump(self.num_timesteps)
 
         # Remap
-        for i in self.all_infos:
+        for i in self.done_infos:
             i["reward_sparse"] = mean_reward
             i["episode_length"] = mean_ep_length
             i["max_puck_velocity_after_hit"] = i["max_puck_vel_after_hit"]
@@ -90,13 +90,13 @@ class CustomEvalCallback(EventCallback):
         evals_in_info = ["reward_sparse", "episode_length", "has_hit", "has_hit_step", "has_scored", "has_scored_step", "min_dist_ee_puck", "min_dist_puck_goal", "max_puck_velocity_after_hit", "mean_puck_velocity_after_hit", ]
 
         for eval in evals_in_info:
-            val = np.mean([i[eval] for i in self.all_infos])
+            val = np.mean([i[eval] for i in self.done_infos])
             self.logger.record(f"eval/{eval}", val)
 
         constraints_in_info = ["max_j_pos_violation", "max_j_vel_violation", "max_ee_x_violation", "max_ee_y_violation", "max_ee_z_violation", "max_jerk_violation", "num_j_pos_violation", "num_j_vel_violation", "num_ee_x_violation", "num_ee_y_violation", "num_ee_z_violation", "num_jerk_violation", "max_compute_time", "mean_compute_time"]
 
         for constraint in constraints_in_info:
-            val = np.mean([i[constraint] for i in self.all_infos])
+            val = np.mean([i[constraint] for i in self.done_infos])
             self.logger.record(f"constraint/{constraint}", val)
 
         if mean_reward > self.best_mean_reward:

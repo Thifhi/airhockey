@@ -9,17 +9,26 @@ import pathlib
 import shutil
 import subprocess
 
-debug = False
-if debug:
-    input("THIS IS DEBUG. PRESS ENTER TO CONTINUE")
-    start_testing("3dof-hit-interpolate", pathlib.Path("logs/16k"))
+def debug():
+    debug = True
+    train = True
+    if debug:
+        input("THIS IS DEBUG. PRESS ENTER TO CONTINUE")
+        if train:
+            train_dir = pathlib.Path("logs/test")
+            shutil.rmtree(train_dir, ignore_errors=True)
+            os.mkdir(train_dir)
+            shutil.copy("config.yaml", train_dir)
+            start_training(train_dir, None)
+        else:
+            start_testing()
+        exit()
 
 if __name__ == "__main__":
+    debug()
     parser = argparse.ArgumentParser()
     test = parser.add_argument_group()
     test.add_argument("--test", action="store_true")
-    test.add_argument("--test_dir")
-    test.add_argument("--env")
     maybe_load = parser.add_argument_group()
     maybe_load.add_argument("--load", default=None)
     train = maybe_load.add_argument_group()
@@ -29,16 +38,18 @@ if __name__ == "__main__":
     from_slurm.add_argument("--train_dir")
     args = parser.parse_args()
 
-    with open("config.yaml", "r") as f:
-        config = yaml.safe_load(f)
-
     if args.test:
-        start_testing(args.env, pathlib.Path(args.test_dir))
+        start_testing()
+        exit()
     
     if args.from_slurm:
         start_training(pathlib.Path(args.train_dir), args.load)
+        exit()
     
     # We will train so set up the folders
+    with open("config.yaml", "r") as f:
+        config = yaml.safe_load(f)
+
     log_dir = pathlib.Path("logs")
     train_dir = log_dir / config["group"] / config["name"]
     os.makedirs(train_dir)
@@ -57,6 +68,6 @@ if __name__ == "__main__":
             f.write(script)
         st = os.stat("modified_slurm.sh")
         os.chmod("modified_slurm.sh", st.st_mode | 0o111)
-        cmd = "./modified_slurm.sh --from_slurm"
+        cmd = "./modified_slurm.sh"
         cmd += f" --load {args.load}" if args.load else ""
         subprocess.call(cmd, shell=True)

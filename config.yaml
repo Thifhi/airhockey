@@ -2,7 +2,10 @@ group: "FILL"
 name: "FILL"
 
 training:
-  env: "3dof-hit-interpolate"
+  env: "3dof-hit"
+  env_args:
+    action_type: "relative"
+    jerk_penalty: False
   num_envs: 60
 
 comment: "!!!n_steps is per parallel environment!!!"
@@ -22,3 +25,10 @@ slurm:
   n: 1
   c: 40
   t: 1200
+
+local_testing:
+  path: "logs/linear-constraints_30kstep_abs"
+  env: "3dof-hit"
+  env_args:
+    action_type: "relative"
+    jerk_penalty: True
