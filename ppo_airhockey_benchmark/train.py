@@ -33,7 +33,7 @@ def start_training(train_dir, load):
     sync_envs_normalization(train_env, eval_env)
     checkpoint_callback = CheckpointLog(save_dir=train_dir, custom_log=custom_log, save_freq=int(1e6/num_envs))
     save_best_model_callback = SaveBestModel(train_dir, custom_log)
-    custom_eval_callback = CustomEvalCallback(eval_env, save_best_model_callback, 30, int(2e5/num_envs), custom_log["best_mean_reward"])
+    custom_eval_callback = CustomEvalCallback(eval_env, save_best_model_callback, 30, int(1e5/num_envs), custom_log["best_mean_reward"])
     callbacks = CallbackList([checkpoint_callback, custom_eval_callback])
     model.learn(total_timesteps=2e8, progress_bar=True, reset_num_timesteps=False, tb_log_name="run", callback=callbacks)
 
