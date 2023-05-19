@@ -11,7 +11,8 @@ import subprocess
 
 def debug():
     debug = False
-    train = True
+    # debug = True
+    train = False
     if debug:
         input("THIS IS DEBUG. PRESS ENTER TO CONTINUE")
         if train:
@@ -52,8 +53,9 @@ if __name__ == "__main__":
 
     log_dir = pathlib.Path("logs")
     train_dir = log_dir / config["group"] / config["job_type"] / config["name"]
-    os.makedirs(train_dir)
-    shutil.copy("config.yaml", train_dir)
+    if not args.load:
+        os.makedirs(train_dir)
+        shutil.copy("config.yaml", train_dir)
 
     if args.context == "local":
         start_training(train_dir, args.load)
