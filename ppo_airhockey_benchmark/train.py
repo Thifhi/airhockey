@@ -28,7 +28,7 @@ def start_training(train_dir, load):
         custom_log = {
             "best_mean_reward": -1e10,
         }
-        train_env, eval_env = make_environments(env, num_envs, env_args)
+        train_env, eval_env = make_environments(env, num_envs, env_args, gamma=config["hyperparameters"]["gamma"])
         model = PPO("MlpPolicy", train_env, verbose=1, tensorboard_log=train_dir, **config["hyperparameters"])
     sync_envs_normalization(train_env, eval_env)
     checkpoint_callback = CheckpointLog(save_dir=train_dir, custom_log=custom_log, save_freq=int(1e6/num_envs))
