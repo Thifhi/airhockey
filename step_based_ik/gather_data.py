@@ -8,17 +8,19 @@ from pathlib import Path
 from stable_baselines3 import PPO
 import random
 import pickle
+import string
 
-MODEL = "PPO/SecondOrderInterpolation/gamma0.997,lr5.e-5,toleration0.2"
-LOAD_PATH = Path("logs") / MODEL
+airhockey_base = Path(__file__).parent.parent
+MODEL = "PPO/SecondOrderInterpolation/gamma0.999,lr5.e-5,toleration0.2,change_rewards"
+LOAD_PATH = airhockey_base / "logs" / MODEL
 ENV = "3dof-hit-pos-gather-data"
 ENV_ARGS = {
-    "reward_coefficient": 0.001,
+    "reward_coefficient": 1,
     "toleration": 0.2
 }
-NUM_ENV = 12
+NUM_ENV = 60
 NUM_ITER = int(1e8)
-FLUSH_INTERVAL = 1e2
+FLUSH_INTERVAL = 1e4
 
 
 def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
@@ -30,23 +32,18 @@ def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
     return _init
 
 def flush_all_episodes(all_episodes):
-    model_data_path = Path("step_based_ik/data") / MODEL
+    model_data_path = airhockey_base / "step_based_ik" / "data" / MODEL
     os.makedirs(model_data_path, exist_ok=True)
-    c = 1
-    while True:
-        save_path = model_data_path / (str(c) + ".pkl")
-        if not save_path.exists():
-            with save_path.open("wb") as f:
-                pickle.dump(all_episodes, f)
-            all_episodes.clear()
-            break
-        else:
-            c += 1
-            continue
+    # Random to collect in parallel
+    save_path = model_data_path / (''.join(random.choice(string.ascii_letters) for i in range(6)) + ".pkl")
+    with save_path.open("wb") as f:
+        pickle.dump(all_episodes, f)
+    all_episodes.clear()
 
 def start_data_gathering():
     eval_env = VecMonitor(SubprocVecEnv([make_env(ENV, rank=i, seed=random.randint(0, 1e9), **ENV_ARGS) for i in range(NUM_ENV)]))
     eval_env = VecNormalize.load(LOAD_PATH / "vecnormalize.pkl", eval_env)
+    eval_env.training = False
     model = PPO.load(LOAD_PATH / "best_model.zip")
 
     all_episodes = []
