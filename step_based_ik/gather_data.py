@@ -10,7 +10,7 @@ import random
 import pickle
 
 MODEL = "PPO/SecondOrderInterpolation/gamma0.997,lr5.e-5,toleration0.2"
-LOAD_PATH = Path("../logs") / MODEL
+LOAD_PATH = Path("logs") / MODEL
 ENV = "3dof-hit-pos-gather-data"
 ENV_ARGS = {
     "reward_coefficient": 0.001,
@@ -30,7 +30,7 @@ def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
     return _init
 
 def flush_all_episodes(all_episodes):
-    model_data_path = Path("./data") / MODEL
+    model_data_path = Path("step_based_ik/data") / MODEL
     os.makedirs(model_data_path, exist_ok=True)
     c = 1
     while True:
@@ -69,4 +69,4 @@ def start_data_gathering():
 
 
 if __name__ == "__main__":
-    main()
+    start_data_gathering()
