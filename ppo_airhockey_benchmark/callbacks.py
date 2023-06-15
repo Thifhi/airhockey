@@ -78,16 +78,27 @@ class CustomEvalCallback(EventCallback):
         self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
         self.logger.dump(self.num_timesteps)
 
-        # Remap
-        for i in self.done_infos:
-            i["reward_sparse"] = mean_reward
-            i["episode_length"] = mean_ep_length
-            i["max_puck_velocity_after_hit"] = i["max_puck_vel_after_hit"]
-            i["mean_puck_velocity_after_hit"] = i["mean_puck_vel_after_hit"]
-            i["mean_compute_time"] = i["mean_compute_time_ms"]
-            i["max_compute_time"] = i["max_compute_time_ms"]
+        if self.done_infos[0]["task"] == "hit":
+            # Remap
+            for i in self.done_infos:
+                i["reward_sparse"] = mean_reward
+                i["episode_length"] = mean_ep_length
+                i["max_puck_velocity_after_hit"] = i["max_puck_vel_after_hit"]
+                i["mean_puck_velocity_after_hit"] = i["mean_puck_vel_after_hit"]
+                i["mean_compute_time"] = i["mean_compute_time_ms"]
+                i["max_compute_time"] = i["max_compute_time_ms"]
 
-        evals_in_info = ["reward_sparse", "episode_length", "has_hit", "has_hit_step", "has_scored", "has_scored_step", "min_dist_ee_puck", "min_dist_puck_goal", "max_puck_velocity_after_hit", "mean_puck_velocity_after_hit", ]
+            evals_in_info = ["reward_sparse", "episode_length", "has_hit", "has_hit_step", "has_scored", "has_scored_step", "min_dist_ee_puck", "min_dist_puck_goal", "max_puck_velocity_after_hit", "mean_puck_velocity_after_hit", ]
+                
+        elif self.done_infos[0]["task"] == "prepare":
+            # Remap
+            for i in self.done_infos:
+                i["reward_sparse"] = mean_reward
+                i["episode_length"] = mean_ep_length
+                i["mean_compute_time"] = i["mean_compute_time_ms"]
+                i["max_compute_time"] = i["max_compute_time_ms"]
+            
+            evals_in_info = ["reward_sparse", "episode_length", "success", "has_hit", "has_hit_step"]
 
         for eval in evals_in_info:
             val = np.mean([i[eval] for i in self.done_infos])
