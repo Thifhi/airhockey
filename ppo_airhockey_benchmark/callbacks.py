@@ -75,6 +75,11 @@ class CustomEvalCallback(EventCallback):
         print(f"Eval num_timesteps={self.num_timesteps}, " f"episode_reward={mean_reward:.2f} +/- {std_reward:.2f}")
         print(f"Episode length: {mean_ep_length:.2f} +/- {std_ep_length:.2f}")
 
+        if mean_reward > self.best_mean_reward:
+            print("New best mean reward!")
+            self.best_mean_reward = mean_reward
+            self.callback.on_step()
+
         self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
         self.logger.dump(self.num_timesteps)
 
@@ -99,6 +104,9 @@ class CustomEvalCallback(EventCallback):
                 i["max_compute_time"] = i["max_compute_time_ms"]
             
             evals_in_info = ["reward_sparse", "episode_length", "success", "has_hit", "has_hit_step"]
+        # TODO temporary for sure xdxd
+        elif self.done_infos[0]["task"] == "defend":
+            return True
 
         for eval in evals_in_info:
             val = np.mean([i[eval] for i in self.done_infos])
@@ -109,10 +117,5 @@ class CustomEvalCallback(EventCallback):
         for constraint in constraints_in_info:
             val = np.mean([i[constraint] for i in self.done_infos])
             self.logger.record(f"constraint/{constraint}", val)
-
-        if mean_reward > self.best_mean_reward:
-            print("New best mean reward!")
-            self.best_mean_reward = mean_reward
-            self.callback.on_step()
 
         return True
