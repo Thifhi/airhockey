@@ -5,6 +5,8 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CallbackList
 from stable_baselines3.common.vec_env import sync_envs_normalization
 
+from sb3_contrib import RecurrentPPO
+
 from .callbacks import CustomEvalCallback, SaveBestModel, CheckpointLog
 from .constants import checkpoint_dir
 from .util import make_environments, setup_wandb
@@ -22,14 +24,21 @@ def start_training(train_dir, load):
             custom_log = json.load(f)
         train_env, eval_env = make_environments(env, num_envs, env_args, load=True, load_dir=train_dir / checkpoint_dir / (load + ".pkl"))
         model_load_dir = train_dir / checkpoint_dir / (load + ".zip")
-        model = PPO.load(model_load_dir, train_env)
+        if config["model_type"] == 'recurrent':
+            print("RECURRENT!")
+            model = RecurrentPPO.load(model_load_dir, train_env)
+        else:
+            model = PPO.load(model_load_dir, train_env)
     else:
         os.makedirs(train_dir / checkpoint_dir)
         custom_log = {
             "best_mean_reward": -1e10,
         }
         train_env, eval_env = make_environments(env, num_envs, env_args, gamma=config["hyperparameters"]["gamma"])
-        model = PPO("MlpPolicy", train_env, verbose=1, tensorboard_log=train_dir, **config["hyperparameters"])
+        if config["model_type"] == 'recurrent':
+            model = RecurrentPPO("MlpLstmPolicy", train_env, verbose=1, tensorboard_log=train_dir, **config["hyperparameters"])
+        else:
+            model = PPO("MlpPolicy", train_env, verbose=1, tensorboard_log=train_dir, **config["hyperparameters"])
     sync_envs_normalization(train_env, eval_env)
     checkpoint_callback = CheckpointLog(save_dir=train_dir, custom_log=custom_log, save_freq=int(1e6/num_envs))
     save_best_model_callback = SaveBestModel(train_dir, custom_log)

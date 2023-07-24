@@ -1,6 +1,6 @@
 absl-py==1.4.0
 addict==2.4.0
--e git+git@github.com:ALRhub/air_hockey.git@3bf068b7fa72dcd9c713b9fdc971cfdfd711d272#egg=AirHockeyChallenge&subdirectory=../../air_hockey
+# -e git+git@github.com:ALRhub/air_hockey.git@3bf068b7fa72dcd9c713b9fdc971cfdfd711d272#egg=AirHockeyChallenge&subdirectory=../../air_hockey
 ale-py==0.7.4
 AutoROM==0.6.1
 AutoROM.accept-rom-license==0.6.1
@@ -13,7 +13,7 @@ contourpy==1.0.7
 cycler==0.11.0
 esdk-obs-python==3.22.2
 exceptiongroup==1.1.1
--e git+https://github.com/Thifhi/fancy_gym_dev@3ca23b36fdea21fbddb0dc0c407eefbb475c2eaf#egg=fancy_gym&subdirectory=../../fancy_gym_dev
+# -e git+https://github.com/Thifhi/fancy_gym_dev@3ca23b36fdea21fbddb0dc0c407eefbb475c2eaf#egg=fancy_gym&subdirectory=../../fancy_gym_dev
 filelock==3.12.0
 fonttools==4.39.3
 glfw==2.5.9
@@ -71,14 +71,14 @@ rsa==4.9
 scikit-learn==1.2.2
 scipy==1.10.1
 six==1.16.0
-stable-baselines3==1.8.0
+stable-baselines3
 sympy==1.11.1
 tensorboard==2.12.2
 tensorboard-data-server==0.7.0
 tensorboard-plugin-wit==1.8.1
 threadpoolctl==3.1.0
 tomli==2.0.1
-torch==2.0.0+cpu
+# torch==2.0.0+cpu
 tqdm==4.65.0
 typing-extensions==4.5.0
 tzdata==2023.3

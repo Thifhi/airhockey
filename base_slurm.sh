@@ -12,8 +12,8 @@ sbatch <<EOT
 #SBATCH -c %%c%%
 #SBATCH -t %%t%%
 
-source %%home%%/airhockey/.venv/bin/activate
-export PYTHONPATH="${PYTHONPATH}:%%home%%/airhockey"
+source %%home%%/.conda/envs/airhockey2/bin/activate airhockey2
+# export PYTHONPATH="${PYTHONPATH}:%%home%%/airhockey2"
 
 python %%home%%/airhockey/run.py --from_slurm --train_dir %%train_dir%% $@
 

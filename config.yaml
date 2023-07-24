@@ -1,36 +1,44 @@
-group: "PPO"
-job_type: "Relative-Actions"
-name: "0"
+group: "RnnPPO"
+job_type: "7dof_defend"
+name: "test-recurrent-1"
+
+model_type: "recurrent"
 
 training:
-  env: "3dof-hit"
+  env: "7dof-defend"
   env_args:
-    action_type: "relative"
-    jerk_penalty: False
-    positive_reward_coef: 10
-  num_envs: 60
+    noise: True
+    horizon: 300
+    last_joint: True
+  num_envs: 12
 
 comment: "!!!n_steps is per parallel environment!!!"
 hyperparameters:
-  n_steps: 250
-  batch_size: 256
+  n_steps: 2048
+  batch_size: 2048
   learning_rate: 5.e-5
+  gamma: 1
+  n_epochs: 10
+  # policy_kwargs:
+  #   ortho_init: False
 
 wandb:
-  entity: "thifhi"
-  project: "3dof-hit"
+  entity: "omeryagmurlu"
+  project: "7dof-ppo-defend"
   mode: "online"
 
 slurm:
-  home: "/home/kit/stud/upgmi"
+  home: "/home/kit/stud/uqtlv"
   partition: "single"
   n: 1
   c: 40
   t: 1800
 
-local_testing:
-  path: "logs/linear-constraints_30kstep_abs"
-  env: "3dof-hit"
-  env_args:
-    action_type: "relative"
-    jerk_penalty: True
+# local_testing:
+#   path: "logs/PPO/test5-jerk"
+#   env: "7dof-hit-ee"
+#   env_args:
+#     noise: True
+#     horizon: 150
+#     last_joint: False
+#     stationary_reward: 0
