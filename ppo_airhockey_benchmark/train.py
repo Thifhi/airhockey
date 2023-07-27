@@ -25,7 +25,6 @@ def start_training(train_dir, load):
         train_env, eval_env = make_environments(env, num_envs, env_args, load=True, load_dir=train_dir / checkpoint_dir / (load + ".pkl"))
         model_load_dir = train_dir / checkpoint_dir / (load + ".zip")
         if config["model_type"] == 'recurrent':
-            print("RECURRENT!")
             model = RecurrentPPO.load(model_load_dir, train_env)
         else:
             model = PPO.load(model_load_dir, train_env)

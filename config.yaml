@@ -1,6 +1,6 @@
 group: "RnnPPO"
 job_type: "7dof_defend"
-name: "test-recurrent-1"
+name: "test-recurrent-3"
 
 model_type: "recurrent"
 
@@ -34,11 +34,11 @@ slurm:
   c: 40
   t: 1800
 
-# local_testing:
-#   path: "logs/PPO/test5-jerk"
-#   env: "7dof-hit-ee"
-#   env_args:
-#     noise: True
-#     horizon: 150
-#     last_joint: False
-#     stationary_reward: 0
+local_testing:
+  model_type: "recurrent"
+  path: "logs/RnnPPO/7dof_defend/test-recurrent-3"
+  env: "7dof-defend"
+  env_args:
+    noise: True
+    horizon: 300
+    last_joint: True
