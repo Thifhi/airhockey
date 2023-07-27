@@ -104,7 +104,6 @@ class CustomEvalCallback(EventCallback):
                 i["max_compute_time"] = i["max_compute_time_ms"]
             
             evals_in_info = ["reward_sparse", "episode_length", "success", "has_hit", "has_hit_step"]
-        # TODO temporary for sure xdxd
         elif self.done_infos[0]["task"] == "defend":
             for i in self.done_infos:
                 i["reward_sparse"] = mean_reward
@@ -114,7 +113,7 @@ class CustomEvalCallback(EventCallback):
                 i["mean_compute_time"] = i["mean_compute_time_ms"]
                 i["max_compute_time"] = i["max_compute_time_ms"]
             
-            evals_in_info = ["reward_sparse", "episode_length", "success", "has_hit", "has_hit_step", "has_success", "has_success_step", "has_goal", "has_goal_step", "last_puck_dist_to_success_region_x", "last_puck_vel_x"]
+            evals_in_info = ["reward_sparse", "episode_length", "success", "has_hit", "has_hit_step", "has_success", "has_success_step", "has_goal", "has_goal_step"]
 
         for eval in evals_in_info:
             val = np.mean([i[eval] for i in self.done_infos])
