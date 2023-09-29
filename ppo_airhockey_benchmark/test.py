@@ -5,6 +5,7 @@ from stable_baselines3 import PPO
 
 from .constants import best_model_file_name, vecnormalize_file_name
 from .util import make_environments
+from air_hockey_challenge.utils import forward_kinematics, robot_to_world, world_to_robot
 
 
 def start_testing():
@@ -20,7 +21,7 @@ def start_testing():
     for q in range(50):
         obs = eval_env.reset()
         cum_reward = 0
-        while True:
+        for step in range(1000):
             action, state = model.predict(obs, deterministic=True)
             obs, reward, done, info = eval_env.step(action)
             cum_reward += reward
@@ -29,4 +30,5 @@ def start_testing():
                 print("Run {}".format(q))
                 print("Reward until last:{}".format(cum_reward - reward))
                 print("Full reward:{}".format(cum_reward))
+                print(f"Episode length: {step}")
                 break

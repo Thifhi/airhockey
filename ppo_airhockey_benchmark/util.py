@@ -15,7 +15,7 @@ def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
 
 def make_environments(env, num_envs, env_args, gamma=1, only_eval=False, load=False, load_dir=None):
     if only_eval:
-        eval_env = VecNormalize.load(load_dir, DummyVecEnv([lambda: fancy_gym.make(env, seed=0, **env_args)]))
+        eval_env = VecNormalize.load(load_dir, DummyVecEnv([lambda: fancy_gym.make(env, seed=1, **env_args)]))
         eval_env.norm_reward = False
         eval_env.training = False
         return eval_env

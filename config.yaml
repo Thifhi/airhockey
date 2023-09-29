@@ -1,25 +1,34 @@
 group: "PPO"
-job_type: "Relative-Actions"
-name: "0"
+job_type: "7dof_hit_2409"
+name: "test-19"
 
 training:
-  env: "3dof-hit"
+  env: "7dof-ik"
   env_args:
-    action_type: "relative"
-    jerk_penalty: False
-    positive_reward_coef: 10
-  num_envs: 60
+    noise: True
+    horizon: 500
+  num_envs: 12
 
 comment: "!!!n_steps is per parallel environment!!!"
 hyperparameters:
-  n_steps: 250
+  n_steps: 256
   batch_size: 256
-  learning_rate: 5.e-5
+  learning_rate: 3.e-4
+  gamma: 1
+  n_epochs: 10
+  # gae_lambda: 0.95
+  # vf_coef: 0.25
+  # ent_coef: 0.005
+  # policy_kwargs:
+    # ortho_init: False
+    # net_arch:
+    #   pi: [128, 128]
+    #   vf: [128, 128]
 
 wandb:
   entity: "thifhi"
   project: "3dof-hit"
-  mode: "online"
+  mode: "disabled"
 
 slurm:
   home: "/home/kit/stud/upgmi"
@@ -29,8 +38,16 @@ slurm:
   t: 1800
 
 local_testing:
-  path: "logs/linear-constraints_30kstep_abs"
-  env: "3dof-hit"
+  # path: "logs/PPO/7dof_prepare/test-183"
+  # env: "7dof-ik"
+  # path: "logs/PPO/7dof_prepare/test-228"
+  # env: "7dof-hit-ik"
+  # path: "logs/downloaded/7dof_hit/test-1"
+  # env: "7dof-hit"
+  # path: "logs/PPO/7dof_prepare/test-238"
+  # env: "7dof-hit-ik"
+  path: "logs/PPO/7dof_hit_2409/test-19"
+  env: "7dof-ik"
   env_args:
-    action_type: "relative"
-    jerk_penalty: True
+    noise: True
+    horizon: 500

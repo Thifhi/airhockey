@@ -107,6 +107,8 @@ class CustomEvalCallback(EventCallback):
         # TODO temporary for sure xdxd
         elif self.done_infos[0]["task"] == "defend":
             return True
+        elif self.done_infos[0]["task"] == "tournament":
+            return True
 
         for eval in evals_in_info:
             val = np.mean([i[eval] for i in self.done_infos])
