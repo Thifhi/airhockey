@@ -12,8 +12,8 @@ sbatch <<EOT
 #SBATCH -c %%c%%
 #SBATCH -t %%t%%
 
-source %%home%%/airhockey/.venv/bin/activate
-export PYTHONPATH="${PYTHONPATH}:%%home%%/airhockey"
+source %%home%%/.bashrc
+mamba activate challenge
 
 python %%home%%/airhockey/run.py --from_slurm --train_dir %%train_dir%% $@
 
