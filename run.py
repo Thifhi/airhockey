@@ -1,4 +1,6 @@
 import os
+import time
+
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 import yaml
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         config = yaml.safe_load(f)
 
     log_dir = pathlib.Path("logs")
-    train_dir = log_dir / config["group"] / config["job_type"] / config["name"]
+    train_dir = log_dir / config["group"] / config["job_type"] / (config["name"] + str(time.time()))
     if not args.load:
         os.makedirs(train_dir)
         shutil.copy("config.yaml", train_dir)

@@ -1,9 +1,9 @@
 group: "PPO"
 job_type: "7dof_hit_2409"
-name: "test-19"
+name: "test-23"
 
 training:
-  env: "7dof-ik"
+  env: "7dof-hit"
   env_args:
     noise: True
     horizon: 500
@@ -26,12 +26,12 @@ hyperparameters:
     #   vf: [128, 128]
 
 wandb:
-  entity: "thifhi"
-  project: "3dof-hit"
-  mode: "disabled"
+  entity: "marcus-fiedler"
+  project: "bounce-reward"
+  mode: "online"
 
 slurm:
-  home: "/home/kit/stud/upgmi"
+  home: "/home/kit/stud/ucsqq"
   partition: "single"
   n: 1
   c: 40
