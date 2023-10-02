@@ -11,16 +11,17 @@ import pickle
 import string
 
 airhockey_base = Path(__file__).parent.parent
-MODEL = "PPO/SecondOrderInterpolation/gamma0.999,lr5.e-5,toleration0.2,change_rewards"
+MODEL = "PPO/7dof_hit_2409/test-19"
 LOAD_PATH = airhockey_base / "logs" / MODEL
-ENV = "3dof-hit-pos-gather-data"
+ENV = "7dof-hit"
 ENV_ARGS = {
-    "reward_coefficient": 1,
-    "toleration": 0.2
+    "noise": True,
+    "horizon": 500
 }
-NUM_ENV = 60
+NUM_ENV = 1
 NUM_ITER = int(1e8)
-FLUSH_INTERVAL = 1e4
+# FLUSH_INTERVAL = 1e4
+FLUSH_INTERVAL = 10
 
 
 def make_env(env_id: str, rank: int, seed: int = 0, **kwargs):
@@ -55,7 +56,7 @@ def start_data_gathering():
         action, _ = model.predict(obs, deterministic=True)
         obs, rew, done, info = eval_env.step(action)
         for i, (i_done, i_info) in enumerate(zip(done, info)):
-            cur_episodes[i].append(i_info["ee_vel"].tolist())
+            cur_episodes[i].append(action)
             if i_done:
                 all_episodes.append(cur_episodes[i])
                 cur_episodes[i] = []

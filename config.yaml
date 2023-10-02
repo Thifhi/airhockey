@@ -47,7 +47,7 @@ local_testing:
   # path: "logs/PPO/7dof_prepare/test-238"
   # env: "7dof-hit-ik"
   path: "logs/PPO/7dof_hit_2409/test-19"
-  env: "7dof-ik"
+  env: "7dof-hit"
   env_args:
     noise: True
     horizon: 500
