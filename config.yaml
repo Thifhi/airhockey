@@ -1,12 +1,14 @@
 group: "PPO"
-job_type: "7dof_hit_2409"
-name: "test-19"
+job_type: "7dof-jacobian-based"
+name: "test-5"
 
 training:
-  env: "7dof-ik"
+  env: "7dof-hit-ee-vel"
   env_args:
     noise: True
     horizon: 500
+    last_joint: False
+    stationary_reward: 0
   num_envs: 12
 
 comment: "!!!n_steps is per parallel environment!!!"

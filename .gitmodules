@@ -3,4 +3,4 @@
 	url = git@github.com:ALRhub/air_hockey.git
 [submodule "fancy_gym_dev"]
 	path = fancy_gym_dev
-	url = https://github.com/Thifhi/fancy_gym_dev
+	url = git@github.com:Thifhi/fancy_gym_dev.git
