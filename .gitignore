@@ -5,3 +5,6 @@ old_logs
 **/__pycache__
 slurm-*
 modified_slurm.sh
+combined_agent
+dataset
+step_based_ik
