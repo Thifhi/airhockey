@@ -1,6 +1,6 @@
 # Air Hockey Challenge Framework
 ## Training Scripts and Testing Scripts
-Everything related to the training and testing process of agents is under `step_based_ik/`.
+Everything related to the training and testing process of agents is under `ppo_airhockey_benchmark/`.
 
 To start a new training `config.yaml`, you have to configure the parameters in `config.yaml`:
 - `Group`, `job_type` and `name` are used `wandb` to categorize the run. You have to set a unique combination of 3 for each new run.
